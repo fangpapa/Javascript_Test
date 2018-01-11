@@ -1,0 +1,46 @@
+$('#delegationBtn').click(function() {
+    $.ajax({
+      url : contextPath + '/findUsers.do',
+      type : 'GET'
+    }).done(function(result) {
+      var data = [];
+      for (var i = 0; i < result.length; i++) {
+        data[i] = {};
+        data[i].title = result[i].name;
+        data[i].userId = result[i].userId;
+      }
+      console.log(JSON.stringify(data));
+      $("#tree").fancytree({
+        extensions : [ "glyph" ],
+        glyph : {
+          map : {
+            doc : "glyphicon glyphicon-user",
+            docOpen : "glyphicon glyphicon-user",
+            checkbox : "glyphicon glyphicon-unchecked",
+            checkboxSelected : "glyphicon glyphicon-check",
+            checkboxUnknown : "glyphicon glyphicon-share",
+            dragHelper : "glyphicon glyphicon-play",
+            dropMarker : "glyphicon glyphicon-arrow-right",
+            error : "glyphicon glyphicon-warning-sign",
+            expanderClosed : "glyphicon glyphicon-plus-sign",
+            expanderLazy : "glyphicon glyphicon-plus-sign", // glyphicon-expand
+            expanderOpen : "glyphicon glyphicon-minus-sign", // glyphicon-collapse-down
+            folder : "glyphicon glyphicon-folder-close",
+            folderOpen : "glyphicon glyphicon-folder-open",
+            loading : "glyphicon glyphicon-refresh"
+          }
+        },
+        checkbox: true,
+        selectMode: 1,
+        source : data
+      });
+
+      bootbox.dialog({message : $("#tree").html()});
+    });
+  });
+  
+  @RequestMapping(value = "/findDelegationUsers", method = RequestMethod.GET)
+  public List<UserDto> findDelegationUsers(HttpServletRequest request) {
+      return delegationService.findDelegationUsers(SsoUserUtil.getUserId(request),
+                      DelegationType.NEW_CLR);
+  }
